@@ -1,0 +1,16 @@
+import { Router } from "express";
+import { authenticate, authorize } from "../../middleware/authenticate.js";
+import { validate } from "../../middleware/validate.js";
+import { upload } from "../uploads/upload.middleware.js";
+import * as controller from "./user.controller.js";
+import { adminListUsersQuerySchema, changePasswordSchema, objectIdParamSchema, updateProfileSchema, updateRoleSchema, updateStatusSchema } from "./user.schemas.js";
+export const userRoutes = Router();
+userRoutes.use(authenticate);
+userRoutes.get("/me", controller.getProfile);
+userRoutes.patch("/me", validate({ body: updateProfileSchema }), controller.updateProfile);
+userRoutes.patch("/me/avatar", upload.single("avatar"), controller.updateAvatar);
+userRoutes.patch("/me/password", validate({ body: changePasswordSchema }), controller.changePassword);
+userRoutes.delete("/me", controller.deleteAccount);
+userRoutes.get("/", authorize("admin"), validate({ query: adminListUsersQuerySchema }), controller.listUsers);
+userRoutes.patch("/:userId/role", authorize("admin"), validate({ params: objectIdParamSchema, body: updateRoleSchema }), controller.updateRole);
+userRoutes.patch("/:userId/status", authorize("admin"), validate({ params: objectIdParamSchema, body: updateStatusSchema }), controller.updateStatus);

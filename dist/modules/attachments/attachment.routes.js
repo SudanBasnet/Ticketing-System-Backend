@@ -1,0 +1,11 @@
+import { Router } from "express";
+import { authenticate } from "../../middleware/authenticate.js";
+import { validate } from "../../middleware/validate.js";
+import { upload } from "../uploads/upload.middleware.js";
+import * as controller from "./attachment.controller.js";
+import { attachmentParamsSchema } from "./attachment.schemas.js";
+export const attachmentRoutes = Router({ mergeParams: true });
+attachmentRoutes.use(authenticate);
+attachmentRoutes.get("/", validate({ params: attachmentParamsSchema }), controller.listAttachments);
+attachmentRoutes.post("/", validate({ params: attachmentParamsSchema }), upload.single("file"), controller.createAttachment);
+attachmentRoutes.delete("/:attachmentId", validate({ params: attachmentParamsSchema }), controller.deleteAttachment);
