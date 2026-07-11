@@ -4,9 +4,11 @@ import { app } from "./app.js";
 import { config } from "./config/env.js";
 import { connectDb, disconnectDb } from "./config/db.js";
 import { logger } from "./utils/logger.js";
+import { ensureSuperAdmin } from "./modules/users/superAdmin.service.js";
 
 const start = async () => {
   await connectDb();
+  await ensureSuperAdmin();
 
   const server = createServer(app);
   server.listen(config.PORT, () => {

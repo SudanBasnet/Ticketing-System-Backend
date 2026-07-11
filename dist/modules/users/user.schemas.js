@@ -13,7 +13,7 @@ export const changePasswordSchema = z.object({
 export const adminListUsersQuerySchema = z.object({
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().max(100).default(20),
-    role: z.enum(["user", "agent", "admin"]).optional(),
+    role: z.enum(["user", "agent", "admin", "super_admin"]).optional(),
     status: z.enum(["active", "disabled", "deleted"]).optional(),
     search: z.string().trim().optional()
 });

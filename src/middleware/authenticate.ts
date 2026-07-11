@@ -7,7 +7,7 @@ import { AppError } from "../utils/AppError.js";
 type AccessPayload = {
   sub: string;
   email: string;
-  role: "user" | "agent" | "admin";
+  role: "user" | "agent" | "admin" | "super_admin";
   tokenVersion?: number;
 };
 
@@ -34,7 +34,7 @@ export const authenticate = (req: Request, _res: Response, next: NextFunction) =
 };
 
 export const authorize =
-  (...roles: Array<"user" | "agent" | "admin">) =>
+  (...roles: Array<"user" | "agent" | "admin" | "super_admin">) =>
   (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) throw new AppError(401, "Authentication required", "AUTH_REQUIRED");
     if (!roles.includes(req.user.role)) {

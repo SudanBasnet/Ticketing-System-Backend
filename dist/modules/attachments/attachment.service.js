@@ -2,7 +2,7 @@ import { AppError } from "../../utils/AppError.js";
 import { deleteCloudinaryAsset, uploadBuffer } from "../uploads/cloudinary.service.js";
 import { IncidentModel } from "../incidents/incident.model.js";
 import { AttachmentModel } from "./attachment.model.js";
-const canAccessIncident = (incident, user) => user.role === "admin" ||
+const canAccessIncident = (incident, user) => user.role === "admin" || user.role === "super_admin" ||
     user.role === "agent" ||
     incident.createdBy.toString() === user.id ||
     incident.assignedTo?.toString() === user.id;
@@ -49,7 +49,7 @@ export const deleteAttachment = async (incidentId, attachmentId, user) => {
     if (!incident)
         throw new AppError(404, "Incident not found", "INCIDENT_NOT_FOUND");
     const ownsAttachment = attachment.uploadedBy.toString() === user.id;
-    if (user.role !== "admin" && user.role !== "agent" && !ownsAttachment) {
+    if (!['admin', 'super_admin'].includes(user.role) && user.role !== "agent" && !ownsAttachment) {
         throw new AppError(403, "You cannot delete this attachment", "FORBIDDEN");
     }
     await deleteCloudinaryAsset(attachment.cloudinaryPublicId, attachment.cloudinaryResourceType === "raw" ? "raw" : "image");

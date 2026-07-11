@@ -11,6 +11,6 @@ userRoutes.patch("/me", validate({ body: updateProfileSchema }), controller.upda
 userRoutes.patch("/me/avatar", upload.single("avatar"), controller.updateAvatar);
 userRoutes.patch("/me/password", validate({ body: changePasswordSchema }), controller.changePassword);
 userRoutes.delete("/me", controller.deleteAccount);
-userRoutes.get("/", authorize("admin"), validate({ query: adminListUsersQuerySchema }), controller.listUsers);
-userRoutes.patch("/:userId/role", authorize("admin"), validate({ params: objectIdParamSchema, body: updateRoleSchema }), controller.updateRole);
-userRoutes.patch("/:userId/status", authorize("admin"), validate({ params: objectIdParamSchema, body: updateStatusSchema }), controller.updateStatus);
+userRoutes.get("/", authorize("super_admin"), validate({ query: adminListUsersQuerySchema }), controller.listUsers);
+userRoutes.patch("/:userId/role", authorize("super_admin"), validate({ params: objectIdParamSchema, body: updateRoleSchema }), controller.updateRole);
+userRoutes.patch("/:userId/status", authorize("super_admin"), validate({ params: objectIdParamSchema, body: updateStatusSchema }), controller.updateStatus);

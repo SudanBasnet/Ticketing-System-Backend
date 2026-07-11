@@ -5,7 +5,7 @@ import type { UserRole } from "../users/user.model.js";
 import { AttachmentModel } from "./attachment.model.js";
 
 const canAccessIncident = (incident: any, user: { id: string; role: UserRole }) =>
-  user.role === "admin" ||
+  user.role === "admin" || user.role === "super_admin" ||
   user.role === "agent" ||
   incident.createdBy.toString() === user.id ||
   incident.assignedTo?.toString() === user.id;
@@ -60,7 +60,7 @@ export const deleteAttachment = async (incidentId: string, attachmentId: string,
   if (!incident) throw new AppError(404, "Incident not found", "INCIDENT_NOT_FOUND");
 
   const ownsAttachment = attachment.uploadedBy.toString() === user.id;
-  if (user.role !== "admin" && user.role !== "agent" && !ownsAttachment) {
+  if (!['admin', 'super_admin'].includes(user.role) && user.role !== "agent" && !ownsAttachment) {
     throw new AppError(403, "You cannot delete this attachment", "FORBIDDEN");
   }
 

@@ -2,10 +2,11 @@ import { Types } from "mongoose";
 import { AppError } from "../../utils/AppError.js";
 import { deleteAttachmentsForIncident } from "../attachments/attachment.service.js";
 import { IncidentModel } from "./incident.model.js";
-const canRead = (incident, user) => user.role === "admin" ||
+const referenceId = (reference) => reference?._id?.toString() ?? reference?.toString();
+const canRead = (incident, user) => user.role === "admin" || user.role === "super_admin" ||
     user.role === "agent" ||
-    incident.createdBy.toString() === user.id ||
-    incident.assignedTo?.toString() === user.id;
+    referenceId(incident.createdBy) === user.id ||
+    referenceId(incident.assignedTo) === user.id;
 const nextIncidentNumber = async () => {
     const count = await IncidentModel.countDocuments();
     return `INC${String(count + 1).padStart(6, "0")}`;
@@ -75,7 +76,7 @@ export const updateIncident = async (incidentId, input, user) => {
     return incident;
 };
 export const deleteIncident = async (incidentId, user) => {
-    if (user.role !== "admin")
+    if (!["admin", "super_admin"].includes(user.role))
         throw new AppError(403, "Only admins can delete incidents", "FORBIDDEN");
     const deleted = await IncidentModel.findByIdAndDelete(incidentId);
     if (!deleted)

@@ -7,7 +7,7 @@ declare global {
       user?: {
         id: string;
         email: string;
-        role: "user" | "agent" | "admin";
+        role: "user" | "agent" | "admin" | "super_admin";
         tokenVersion?: number;
       };
     }
