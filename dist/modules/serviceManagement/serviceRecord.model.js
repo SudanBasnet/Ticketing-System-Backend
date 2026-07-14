@@ -1,0 +1,38 @@
+import mongoose, { Schema } from "mongoose";
+export const serviceRecordTypes = ["request", "problem", "change", "ci", "knowledge", "activity", "survey"];
+const serviceRecordSchema = new Schema({
+    type: { type: String, enum: serviceRecordTypes, required: true, index: true },
+    number: { type: String, required: true, unique: true, index: true },
+    title: { type: String, required: true, trim: true, maxlength: 180 },
+    description: { type: String, trim: true, maxlength: 6000, default: "" },
+    status: { type: String, required: true, trim: true, index: true },
+    priority: { type: String, enum: ["low", "medium", "high", "urgent"], default: "medium", index: true },
+    category: { type: String, trim: true, index: true },
+    owner: { type: Schema.Types.ObjectId, ref: "User", index: true },
+    requestedBy: { type: Schema.Types.ObjectId, ref: "User", index: true },
+    approver: { type: Schema.Types.ObjectId, ref: "User" },
+    approvalStatus: { type: String, enum: ["not_required", "pending", "approved", "rejected"], default: "not_required" },
+    dueAt: { type: Date, index: true },
+    startedAt: { type: Date },
+    completedAt: { type: Date },
+    risk: { type: String, enum: ["low", "medium", "high", "critical"] },
+    impact: { type: String },
+    implementationPlan: { type: String },
+    testPlan: { type: String },
+    rollbackPlan: { type: String },
+    rootCause: { type: String },
+    workaround: { type: String },
+    knownError: { type: Boolean, default: false },
+    ciType: { type: String },
+    environment: { type: String },
+    location: { type: String },
+    serialNumber: { type: String },
+    lifecycle: { type: String },
+    tags: [{ type: String, trim: true, lowercase: true }],
+    relatedIncidents: [{ type: Schema.Types.ObjectId, ref: "Incident" }],
+    relatedRecords: [{ type: Schema.Types.ObjectId, ref: "ServiceRecord" }],
+    metadata: { type: Schema.Types.Mixed, default: {} },
+    demoKey: { type: String, index: true },
+}, { timestamps: true });
+serviceRecordSchema.index({ title: "text", description: "text", number: "text", tags: "text" });
+export const ServiceRecordModel = mongoose.model("ServiceRecord", serviceRecordSchema);

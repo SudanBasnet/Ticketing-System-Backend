@@ -6,6 +6,7 @@ import { errorHandler, notFound } from "./middleware/errorHandler.js";
 import { authRoutes } from "./modules/auth/auth.routes.js";
 import { incidentRoutes } from "./modules/incidents/incident.routes.js";
 import { userRoutes } from "./modules/users/user.routes.js";
+import { serviceRecordRoutes } from "./modules/serviceManagement/serviceRecord.routes.js";
 import { sendSuccess } from "./utils/apiResponse.js";
 export const app = express();
 app.use(requestId);
@@ -21,5 +22,6 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/incidents", incidentRoutes);
+app.use("/api/v1/service-management", serviceRecordRoutes);
 app.use(notFound);
 app.use(errorHandler);

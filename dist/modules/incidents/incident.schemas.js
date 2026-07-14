@@ -7,11 +7,15 @@ export const createIncidentSchema = z.object({
     description: z.string().trim().min(3).max(5000),
     priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
     category: z.string().trim().max(80).optional(),
-    tags: z.array(z.string().trim().min(1).max(40)).max(12).default([])
+    tags: z.array(z.string().trim().min(1).max(40)).max(12).default([]),
+    assignmentGroup: z.string().trim().max(100).optional(),
+    affectedCi: z.string().regex(/^[a-f\d]{24}$/i).optional()
 });
 export const updateIncidentSchema = createIncidentSchema.partial().extend({
     status: z.enum(["open", "in_progress", "resolved", "closed"]).optional(),
-    assignedTo: z.string().regex(/^[a-f\d]{24}$/i, "Invalid assigned user id").nullable().optional()
+    assignedTo: z.string().regex(/^[a-f\d]{24}$/i, "Invalid assigned user id").nullable().optional(),
+    slaStatus: z.enum(["on_track", "at_risk", "breached", "met"]).optional(),
+    resolutionNotes: z.string().trim().max(3000).optional()
 });
 export const listIncidentQuerySchema = z.object({
     page: z.coerce.number().int().positive().default(1),

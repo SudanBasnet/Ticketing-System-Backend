@@ -20,11 +20,16 @@ const nextIncidentNumber = async () => {
 };
 
 export const createIncident = async (input: any, userId: string) => {
+  const resolutionHours: Record<string, number> = { urgent: 4, high: 8, medium: 24, low: 72 };
+  const now = new Date();
   return IncidentModel.create({
     ...input,
     number: await nextIncidentNumber(),
     createdBy: userId,
-    lastActivityAt: new Date()
+    lastActivityAt: now,
+    responseDueAt: new Date(now.getTime() + (input.priority === "urgent" ? 15 : 60) * 60_000),
+    resolutionDueAt: new Date(now.getTime() + resolutionHours[input.priority || "medium"] * 3_600_000),
+    assignmentGroup: input.assignmentGroup || "Service Desk"
   });
 };
 
@@ -75,6 +80,7 @@ export const updateIncident = async (incidentId: string, input: any, user: { id:
 
   Object.assign(incident, input, { lastActivityAt: new Date() });
   if (input.status === "closed" && !incident.closedAt) incident.closedAt = new Date();
+  if (["resolved", "closed"].includes(input.status)) incident.slaStatus = incident.resolutionDueAt && new Date() > incident.resolutionDueAt ? "breached" : "met";
   if (input.status && input.status !== "closed") incident.closedAt = undefined;
   await incident.save();
   return incident;
