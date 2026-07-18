@@ -1,7 +1,6 @@
 import cors from "cors";
 import type { Express } from "express";
 import { rateLimit } from "express-rate-limit";
-import * as helmetModule from "helmet";
 import morgan from "morgan";
 
 import { config, isProduction } from "../config/env.js";
@@ -11,11 +10,6 @@ import { sanitizeInput } from "./sanitize.js";
 export const applySecurityMiddleware = (app: Express) => {
   const allowedOrigins = config.CLIENT_ORIGIN.split(",").map((origin) => origin.trim());
 
-  app.use(
-    helmetModule.default({
-      crossOriginResourcePolicy: { policy: "cross-origin" }
-    })
-  );
   app.use(
     cors({
       origin: allowedOrigins,
