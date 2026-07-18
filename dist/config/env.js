@@ -2,7 +2,9 @@ import dotenv from "dotenv";
 import { z } from "zod";
 dotenv.config();
 const envSchema = z.object({
-    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    NODE_ENV: z
+        .enum(["development", "test", "production"])
+        .default(process.env.VERCEL ? "production" : "development"),
     PORT: z.coerce.number().int().positive().default(5000),
     MONGO_URI: z.string().min(1),
     CLIENT_ORIGIN: z.string().min(1),
