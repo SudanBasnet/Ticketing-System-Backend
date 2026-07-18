@@ -17,6 +17,14 @@ applySecurityMiddleware(app);
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 
+app.get("/", (_req, res) => {
+  sendSuccess(res, 200, "Ticketing System API", {
+    service: "ticketing-system-api",
+    health: "/api/health",
+    apiBase: "/api/v1"
+  });
+});
+
 app.get("/api/health", (_req, res) => {
   sendSuccess(res, 200, "API healthy", {
     service: "ticketing-system-api",
