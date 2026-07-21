@@ -5,6 +5,7 @@ import type { Response } from "express";
 import { config, isProduction } from "../../config/env.js";
 import { AppError } from "../../utils/AppError.js";
 import { sendMail } from "../../utils/email.js";
+import { logger } from "../../utils/logger.js";
 import { hashToken, randomToken, signAccessToken } from "../../utils/tokens.js";
 import { UserModel, type UserDocument } from "../users/user.model.js";
 import {
@@ -82,10 +83,12 @@ export const register = async (input: { name: string; email: string; password: s
     tokenHash: hashToken(verificationToken),
     expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
   });
-  await sendMail({
+  void sendMail({
     to: user.email,
     subject: "Verify your ticketing system account",
     text: `Use this verification token: ${verificationToken}`
+  }).catch((error) => {
+    logger.warn({ err: error, email: user.email }, "Verification email delivery failed");
   });
 
   const tokens = await issueTokenPair(user, res, ip, userAgent);

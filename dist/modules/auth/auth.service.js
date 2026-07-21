@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { config, isProduction } from "../../config/env.js";
 import { AppError } from "../../utils/AppError.js";
 import { sendMail } from "../../utils/email.js";
+import { logger } from "../../utils/logger.js";
 import { hashToken, randomToken, signAccessToken } from "../../utils/tokens.js";
 import { UserModel } from "../users/user.model.js";
 import { EmailVerificationTokenModel, PasswordResetTokenModel, RefreshTokenModel } from "./auth.models.js";
@@ -67,10 +68,12 @@ export const register = async (input, res, ip, userAgent) => {
         tokenHash: hashToken(verificationToken),
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
     });
-    await sendMail({
+    void sendMail({
         to: user.email,
         subject: "Verify your ticketing system account",
         text: `Use this verification token: ${verificationToken}`
+    }).catch((error) => {
+        logger.warn({ err: error, email: user.email }, "Verification email delivery failed");
     });
     const tokens = await issueTokenPair(user, res, ip, userAgent);
     return { user: sanitizeUser(user), accessToken: tokens.accessToken };
